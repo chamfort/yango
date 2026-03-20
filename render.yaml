@@ -3,8 +3,8 @@ services:
     name: yango-api
     env: node
     rootDir: backend
-    buildCommand: yarn install && yarn build && yarn prisma generate
-    startCommand: yarn start:prod
+    buildCommand: yarn install && yarn build && cd backend && yarn prisma generate
+    startCommand: cd backend && yarn start:prod
     envVars:
       - key: NODE_ENV
         value: production
