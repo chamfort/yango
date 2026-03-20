@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Table: users
+enum Role {
+  grand_depot
+  petit_depot
+  transporteur
+  client
+  admin
+}
+
+enum UserStatus {
+  actif
+  suspendu
+  en_attente_validation
+}
+
+model User {
+  id        String     @id @default(uuid())
+  phone     String     @unique
+  role      Role
+  nom       String
+  ville     String?
+  lat       Float?
+  lng       Float?
+  statut         UserStatus @default(en_attente_validation)
+  est_disponible Boolean    @default(true)
+  kycDocUrl      String?
+  kycSelfieUrl   String?
+  kycNotes       String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  // Relations
+  products           Product[]
+  clientOrders       Order[]    @relation("ClientOrders")
+  distributeurOrders Order[]    @relation("DistributeurOrders")
+  transporteurOrders Order[]    @relation("TransporteurOrders")
+  deliveries         Delivery[]
+}
+
+// Table: produits
+enum ProductCategory {
+  biere
+  jus
+  eau
+  soft
+}
+
+model Product {
+  id              String          @id @default(uuid())
+  distributeur_id String
+  distributeur    User            @relation(fields: [distributeur_id], references: [id])
+  nom             String
+  categorie       ProductCategory
+  contenance      String
+  prix_unitaire   Float
+  stock_disponible Int            @default(0)
+  image_url       String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  orderItems      OrderItem[]
+}
+
+// Table: commandes
+enum OrderStatus {
+  en_attente
+  confirmee
+  en_livraison
+  livree
+  annulee
+}
+
+enum PaymentMethod {
+  mobile_money
+  especes
+  credit
+}
+
+model Order {
+  id               String        @id @default(uuid())
+  client_id        String
+  client           User          @relation("ClientOrders", fields: [client_id], references: [id])
+  distributeur_id  String?
+  distributeur     User?         @relation("DistributeurOrders", fields: [distributeur_id], references: [id])
+  transporteur_id  String?
+  transporteur     User?         @relation("TransporteurOrders", fields: [transporteur_id], references: [id])
+  statut           OrderStatus   @default(en_attente)
+  montant_total    Float
+  mode_paiement    PaymentMethod
+  lat_livraison    Float
+  lng_livraison    Float
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  items            OrderItem[]
+  delivery         Delivery?
+}
+
+model OrderItem {
+  id            String  @id @default(uuid())
+  order_id      String
+  order         Order   @relation(fields: [order_id], references: [id])
+  product_id    String
+  product       Product @relation(fields: [product_id], references: [id])
+  quantite      Int
+  prix_unitaire Float
+}
+
+// Table: livraisons
+enum DeliveryStatus {
+  assignee
+  en_route
+  arrivee
+  completee
+}
+
+model Delivery {
+  id              String         @id @default(uuid())
+  commande_id     String         @unique
+  commande        Order          @relation(fields: [commande_id], references: [id])
+  transporteur_id String
+  transporteur    User           @relation(fields: [transporteur_id], references: [id])
+  statut          DeliveryStatus @default(assignee)
+  lat_actuelle    Float?
+  lng_actuelle    Float?
+  heure_depart    DateTime?
+  heure_arrivee   DateTime?
+  signature_client String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}

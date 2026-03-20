@@ -1,0 +1,51 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Error: Prisma schema validation - (get-dmmf wasm)
+Error code: P1012
+error: Native type VarChar is not supported for sqlite connector.
+  -->  prisma\schema.prisma:28
+   | 
+27 |   id        String     @id @default(uuid())
+28 |   phone     String     @unique @db.VarChar(20)
+   | 
+error: Native type VarChar is not supported for sqlite connector.
+  -->  prisma\schema.prisma:30
+   | 
+29 |   role      Role
+30 |   nom       String     @db.VarChar(100)
+   | 
+error: Native type VarChar is not supported for sqlite connector.
+  -->  prisma\schema.prisma:31
+   | 
+30 |   nom       String     @db.VarChar(100)
+31 |   ville     String?    @db.VarChar(50)
+   | 
+error: Native type VarChar is not supported for sqlite connector.
+  -->  prisma\schema.prisma:58
+   | 
+57 |   distributeur    User            @relation(fields: [distributeur_id], references: [id])
+58 |   nom             String          @db.VarChar(100)
+   | 
+error: Native type VarChar is not supported for sqlite connector.
+  -->  prisma\schema.prisma:60
+   | 
+59 |   categorie       ProductCategory
+60 |   contenance      String          @db.VarChar(20)
+   | 
+error: Native type Text is not supported for sqlite connector.
+  -->  prisma\schema.prisma:63
+   | 
+62 |   stock_disponible Int            @default(0)
+63 |   image_url       String?         @db.Text
+   | 
+error: Native type Text is not supported for sqlite connector.
+  -->  prisma\schema.prisma:121
+   | 
+120 |   heure_arrivee   DateTime?
+121 |   signature_client String?       @db.Text
+   | 
+
+Validation Error Count: 7
+[Context: getDmmf]
+
+Prisma CLI Version : 6.4.1
