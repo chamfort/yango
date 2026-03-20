@@ -1,20 +1,17 @@
-databaseGroup:
-  name: yango-db
-  databaseName: yango
-  ipAllowList: []
-
 services:
   - type: web
     name: yango-api
     env: node
     region: oregon
     plan: free
-    buildCommand: npm install && npx prisma generate && npm run build
+    buildCommand: npm install && npm run build && npx prisma generate
     startCommand: npm run start:prod
     healthCheckPath: /
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 10000
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
